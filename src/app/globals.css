@@ -24,7 +24,9 @@ html {
 }
 
 .content-width {
+  margin-inline: auto;
   width: clamp(340px, 100%, 1600px);
+  padding-inline: 1.5rem;
 }
 
 a {
@@ -34,4 +36,12 @@ a {
 
 ul {
   list-style: none;
+}
+
+.text-gradient-accent {
+  background: linear-gradient(98.67deg, #ff9500 13.13%, #ff5900 152.73%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }

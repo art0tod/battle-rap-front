@@ -9,7 +9,7 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  min-height: min(100dvh, 1184px);
+  min-height: min(100dvh, 1200px);
   padding: 9rem 0 0;
   gap: 6rem;
 }
