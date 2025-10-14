@@ -5,7 +5,6 @@ import Link from "next/link";
 import styles from "./styles.module.css";
 
 const links = [
-  { href: "/", title: "Главная" },
   { href: "/posts", title: "Посты" },
   { href: "/members", title: "Участники" },
   { href: "/judges", title: "Судьи" },
@@ -36,7 +35,9 @@ export default function Header() {
     >
       <div className={`${styles.content} content-width`}>
         <div className={styles.logo}>
-          <span className={styles.logoText}>Баттлы</span>
+          <Link className={styles.logoLink} href={"/"}>
+            <span className={styles.logoText}>Баттлы</span>
+          </Link>
         </div>
         <nav className={styles.navBar}>
           <ul className={styles.links}>
@@ -48,7 +49,7 @@ export default function Header() {
               </li>
             ))}
           </ul>
-          <Link className={styles.cta} href={"/register"}>
+          <Link className={styles.cta} href={"/profile"}>
             Войти
           </Link>
         </nav>
