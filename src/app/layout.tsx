@@ -3,6 +3,7 @@ import { Montserrat } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header/Header";
 import Footer from "@/components/layout/Footer/Footer";
+import ScrollTopButton from "@/components/ui/ScrollTopButton/ScrollTopButton";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -25,6 +26,7 @@ export default function RootLayout({
       <body className={`${montserrat.className} ${montserrat.variable}`}>
         <Header />
         {children}
+        <ScrollTopButton />
         <Footer />
       </body>
     </html>
