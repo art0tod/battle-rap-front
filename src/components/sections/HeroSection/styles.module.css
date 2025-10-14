@@ -33,6 +33,13 @@
 
   font-weight: 700;
   font-size: 1.6rem;
+  box-shadow: 0 0 18px rgba(255, 149, 0, 0.35);
+  transition: box-shadow 0.2s ease;
+}
+
+.participate:hover,
+.participate:focus-visible {
+  box-shadow: 0 0 32px rgba(255, 149, 0, 0.55);
 }
 
 .heading {

@@ -96,15 +96,17 @@
 }
 
 .siteLink {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 29px;
+  color: #FFFFFF;
+  transition: opacity 0.2s ease;
+}
 
-font-style: normal;
-font-weight: 700;
-font-size: 24px;
-line-height: 29px;
-
-color: #FFFFFF;
-
-
+.siteLink:hover,
+.siteLink:focus-visible {
+  opacity: 0.75;
 }
 
 .cta {

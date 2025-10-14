@@ -39,6 +39,15 @@
   align-items: center;
 }
 
+.link {
+  transition: opacity 0.2s ease;
+}
+
+.link:hover,
+.link:focus-visible {
+  opacity: 0.75;
+}
+
 .cta {
   padding: 2rem 4.375rem;
   border: 1px solid white;

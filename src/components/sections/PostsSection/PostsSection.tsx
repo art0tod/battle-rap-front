@@ -84,6 +84,8 @@ export default function PostsSection() {
     posts.map(() => ({
       likes: 0,
       dislikes: 0,
+      liked: false,
+      disliked: false,
     })),
   );
 
@@ -93,7 +95,13 @@ export default function PostsSection() {
         currentIndex === index
           ? {
               ...reaction,
-              likes: reaction.likes + 1,
+              likes: reaction.liked ? Math.max(0, reaction.likes - 1) : reaction.likes + 1,
+              liked: !reaction.liked,
+              dislikes:
+                reaction.disliked && !reaction.liked
+                  ? Math.max(0, reaction.dislikes - 1)
+                  : reaction.dislikes,
+              disliked: reaction.disliked && !reaction.liked ? false : reaction.disliked,
             }
           : reaction,
       );
@@ -103,12 +111,20 @@ export default function PostsSection() {
   const handleDislike = (index: number) => {
     setReactions((prevReactions) => {
       return prevReactions.map((reaction, currentIndex) =>
-        currentIndex === index
-          ? {
-              ...reaction,
-              dislikes: reaction.dislikes + 1,
-            }
-          : reaction,
+          currentIndex === index
+            ? {
+                ...reaction,
+                dislikes: reaction.disliked
+                  ? Math.max(0, reaction.dislikes - 1)
+                  : reaction.dislikes + 1,
+                disliked: !reaction.disliked,
+                likes:
+                  reaction.liked && !reaction.disliked
+                    ? Math.max(0, reaction.likes - 1)
+                    : reaction.likes,
+                liked: reaction.liked && !reaction.disliked ? false : reaction.liked,
+              }
+            : reaction,
       );
     });
   };
@@ -152,14 +168,18 @@ export default function PostsSection() {
                   <div className={styles.postReactions}>
                     <button
                       type="button"
-                      className={styles.actionButton}
+                      className={`${styles.actionButton} ${
+                        reactions[index].liked ? styles.actionButtonActive : ""
+                      }`}
                       onClick={() => handleLike(index)}
                     >
                       Лайк · {reactions[index].likes}
                     </button>
                     <button
                       type="button"
-                      className={`${styles.actionButton} ${styles.actionButtonDislike}`}
+                      className={`${styles.actionButton} ${styles.actionButtonDislike} ${
+                        reactions[index].disliked ? styles.actionButtonActive : ""
+                      }`}
                       onClick={() => handleDislike(index)}
                     >
                       Дизлайк · {reactions[index].dislikes}

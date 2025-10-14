@@ -57,8 +57,14 @@
   font-weight: 700;
   font-size: 25px;
   text-align: center;
+  box-shadow: 0 0 18px rgba(255, 149, 0, 0.35);
+  transition: box-shadow 0.2s ease;
 }
 
+.primaryAction:hover,
+.primaryAction:focus-visible {
+  box-shadow: 0 0 32px rgba(255, 149, 0, 0.55);
+}
 .secondaryAction {
   display: inline-flex;
   align-items: center;
@@ -71,4 +77,3 @@
   font-size: 25px;
   text-align: center;
 }
-

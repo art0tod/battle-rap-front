@@ -114,13 +114,15 @@
   align-items: center;
   justify-content: center;
   text-transform: none;
+  box-shadow: 0 0 16px rgba(255, 149, 0, 0.3);
 }
 
 .cardButton:hover {
   transform: none;
-  box-shadow: none;
+  box-shadow: 0 0 28px rgba(255, 149, 0, 0.5);
 }
 
 .cardButton:focus-visible {
   outline: none;
+  box-shadow: 0 0 28px rgba(255, 149, 0, 0.5);
 }

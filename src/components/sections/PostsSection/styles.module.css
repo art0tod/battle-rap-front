@@ -184,6 +184,32 @@
   color: #ff5900;
 }
 
+.actionButtonActive {
+  border: none;
+  color: #fff;
+  background: linear-gradient(98.67deg, #ff9500 13.13%, #ff5900 152.73%);
+  box-shadow: 0 0 16px rgba(255, 149, 0, 0.35);
+}
+
+.actionButtonDislike.actionButtonActive {
+  background: linear-gradient(140deg, #ff4d00 0%, #ff1f1f 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 0 16px rgba(255, 50, 0, 0.35);
+}
+
+.actionButtonActive:hover,
+.actionButtonActive:focus-visible {
+  color: #fff;
+  box-shadow: 0 0 28px rgba(255, 149, 0, 0.55);
+}
+
+.actionButtonDislike.actionButtonActive:hover,
+.actionButtonDislike.actionButtonActive:focus-visible {
+  color: #fff;
+  box-shadow: 0 0 28px rgba(255, 50, 0, 0.55);
+}
+
 .postTag {
   font-weight: 700;
   font-size: 0.875rem;
