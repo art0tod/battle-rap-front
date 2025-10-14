@@ -45,3 +45,8 @@ ul {
   color: transparent;
   -webkit-text-fill-color: transparent;
 }
+
+::selection {
+  background-color: #FF9500;
+  color: #fff;
+}
