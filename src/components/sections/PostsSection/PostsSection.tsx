@@ -12,7 +12,7 @@ const posts = [
     description:
       "Главные баттлы недели собрали полные площадки. Разбираем лучшие панчи и сюжеты вечера.",
     href: "/posts/latest-stage",
-    image: "/participants/photo.png",
+    image: "/participants/photo.jpg",
     date: "12.05.2024",
     author: "HIP-HOP.RU",
     highlights: ["Лучший панч Nova", "Гром против Факела"],
@@ -24,7 +24,7 @@ const posts = [
     description:
       "Говорим о стратегии, вдохновении и том, как готовиться к самым громким битвам сезона.",
     href: "/posts/nova-interview",
-    image: "/participants/photo.png",
+    image: "/participants/photo.jpg",
     date: "05.05.2024",
     author: "HIP-HOP.RU",
     highlights: ["Секрет подготовки", "Любимые биты"],
@@ -36,7 +36,7 @@ const posts = [
     description:
       "Пошаговый план для тех, кто готов выйти в свет и прокачать свою подачу перед судьями.",
     href: "/posts/how-to-apply",
-    image: "/participants/photo.png",
+    image: "/participants/photo.jpg",
     date: "28.04.2024",
     author: "HIP-HOP.RU",
     highlights: ["Чек-лист участника", "Что брать на площадку"],
@@ -48,7 +48,7 @@ const posts = [
     description:
       "Критерии оценки и скрытые нюансы системы баллов. Разбираем с примерами живых баттлов.",
     href: "/posts/jury-breakdown",
-    image: "/participants/photo.png",
+    image: "/participants/photo.jpg",
     date: "20.04.2024",
     author: "HIP-HOP.RU",
     highlights: ["Разбор оценок", "Чек-лист для судей"],
@@ -60,7 +60,7 @@ const posts = [
     description:
       "Что происходит за кулисами: подготовка артистов, проверка звука и эмоции перед выходом.",
     href: "/posts/backstage-report",
-    image: "/participants/photo.png",
+    image: "/participants/photo.jpg",
     date: "14.04.2024",
     author: "HIP-HOP.RU",
     highlights: ["Эксклюзивные кадры", "Команда проекта"],
@@ -72,7 +72,7 @@ const posts = [
     description:
       "Подборка треков, которая поможет настроиться на сцену и держать концентрацию до финального раунда.",
     href: "/posts/warm-up-playlist",
-    image: "/participants/photo.png",
+    image: "/participants/photo.jpg",
     date: "07.04.2024",
     author: "HIP-HOP.RU",
     highlights: ["12 треков", "Авторский выбор"],
@@ -87,7 +87,7 @@ export default function PostsSection() {
       dislikes: 0,
       liked: false,
       disliked: false,
-    })),
+    }))
   );
 
   const handleLike = (index: number) => {
@@ -96,15 +96,20 @@ export default function PostsSection() {
         currentIndex === index
           ? {
               ...reaction,
-              likes: reaction.liked ? Math.max(0, reaction.likes - 1) : reaction.likes + 1,
+              likes: reaction.liked
+                ? Math.max(0, reaction.likes - 1)
+                : reaction.likes + 1,
               liked: !reaction.liked,
               dislikes:
                 reaction.disliked && !reaction.liked
                   ? Math.max(0, reaction.dislikes - 1)
                   : reaction.dislikes,
-              disliked: reaction.disliked && !reaction.liked ? false : reaction.disliked,
+              disliked:
+                reaction.disliked && !reaction.liked
+                  ? false
+                  : reaction.disliked,
             }
-          : reaction,
+          : reaction
       );
     });
   };
@@ -112,20 +117,21 @@ export default function PostsSection() {
   const handleDislike = (index: number) => {
     setReactions((prevReactions) => {
       return prevReactions.map((reaction, currentIndex) =>
-          currentIndex === index
-            ? {
-                ...reaction,
-                dislikes: reaction.disliked
-                  ? Math.max(0, reaction.dislikes - 1)
-                  : reaction.dislikes + 1,
-                disliked: !reaction.disliked,
-                likes:
-                  reaction.liked && !reaction.disliked
-                    ? Math.max(0, reaction.likes - 1)
-                    : reaction.likes,
-                liked: reaction.liked && !reaction.disliked ? false : reaction.liked,
-              }
-            : reaction,
+        currentIndex === index
+          ? {
+              ...reaction,
+              dislikes: reaction.disliked
+                ? Math.max(0, reaction.dislikes - 1)
+                : reaction.dislikes + 1,
+              disliked: !reaction.disliked,
+              likes:
+                reaction.liked && !reaction.disliked
+                  ? Math.max(0, reaction.likes - 1)
+                  : reaction.likes,
+              liked:
+                reaction.liked && !reaction.disliked ? false : reaction.liked,
+            }
+          : reaction
       );
     });
   };
@@ -159,7 +165,10 @@ export default function PostsSection() {
                   </ul>
                 ) : null}
                 <p className={styles.postDescription}>{post.description}</p>
-                <Link className={`${styles.postLink} ${styles.postLinkExtraSpacing}`} href={post.href}>
+                <Link
+                  className={`${styles.postLink} ${styles.postLinkExtraSpacing}`}
+                  href={post.href}
+                >
                   Читать дальше
                 </Link>
                 <div className={styles.postImage}>
@@ -183,8 +192,12 @@ export default function PostsSection() {
                     </button>
                     <button
                       type="button"
-                      className={`${styles.actionButton} ${styles.actionButtonDislike} ${
-                        reactions[index].disliked ? styles.actionButtonActive : ""
+                      className={`${styles.actionButton} ${
+                        styles.actionButtonDislike
+                      } ${
+                        reactions[index].disliked
+                          ? styles.actionButtonActive
+                          : ""
                       }`}
                       onClick={() => handleDislike(index)}
                     >
