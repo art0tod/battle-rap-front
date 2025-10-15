@@ -1,0 +1,18 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 1.5rem;
+}
+
+.modal {
+  background-color: #000;
+  border: 1px solid #fff;
+  width: min(480px, 100%);
+  max-height: min(640px, calc(100vh - 3rem));
+  overflow: auto;
+}

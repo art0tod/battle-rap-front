@@ -5,6 +5,7 @@ import Header from "@/components/layout/Header/Header";
 import Footer from "@/components/layout/Footer/Footer";
 import ScrollTopButton from "@/components/ui/ScrollTopButton/ScrollTopButton";
 import MusicPlayer from "@/components/layout/MusicPlayer/MusicPlayer";
+import Providers from "./providers";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -25,11 +26,13 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className={`${montserrat.className} ${montserrat.variable}`}>
-        <Header />
-        {children}
-        <MusicPlayer />
-        <ScrollTopButton />
-        <Footer />
+        <Providers>
+          <Header />
+          {children}
+          <MusicPlayer />
+          <ScrollTopButton />
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

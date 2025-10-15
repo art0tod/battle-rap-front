@@ -3,6 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "./styles.module.css";
+import AuthModal, {
+  type AuthMode,
+} from "@/components/auth/AuthModal/AuthModal";
+import { useAuth } from "@/components/auth/AuthProvider/AuthProvider";
 
 const links = [
   { href: "/#posts-section", title: "Посты" },
@@ -13,6 +17,9 @@ const links = [
 
 export default function Header() {
   const [isBlurred, setIsBlurred] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<AuthMode>("signIn");
+  const { user } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,6 +33,12 @@ export default function Header() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+    if (user && isAuthModalOpen) {
+      setIsAuthModalOpen(false);
+    }
+  }, [user, isAuthModalOpen]);
 
   return (
     <header
@@ -49,11 +62,31 @@ export default function Header() {
               </li>
             ))}
           </ul>
-          <Link className={styles.cta} href={"/profile"}>
-            Войти
-          </Link>
+          {user ? (
+            <Link className={styles.cta} href={"/profile"}>
+              {user.displayName}
+            </Link>
+          ) : (
+            <Link
+              className={styles.cta}
+              href={"/profile"}
+              onClick={(event) => {
+                event.preventDefault();
+                setAuthMode("signIn");
+                setIsAuthModalOpen(true);
+              }}
+            >
+              Войти
+            </Link>
+          )}
         </nav>
       </div>
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        mode={authMode}
+        onClose={() => setIsAuthModalOpen(false)}
+        onModeChange={setAuthMode}
+      />
     </header>
   );
 }
