@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { ThumbsDown, ThumbsUp } from "lucide-react";
 import styles from "./styles.module.css";
 
 const posts = [
@@ -173,7 +174,12 @@ export default function PostsSection() {
                       }`}
                       onClick={() => handleLike(index)}
                     >
-                      Лайк · {reactions[index].likes}
+                      <ThumbsUp
+                        aria-hidden="true"
+                        className={styles.actionButtonIcon}
+                        strokeWidth={1.75}
+                      />
+                      <span>Лайк · {reactions[index].likes}</span>
                     </button>
                     <button
                       type="button"
@@ -182,7 +188,12 @@ export default function PostsSection() {
                       }`}
                       onClick={() => handleDislike(index)}
                     >
-                      Дизлайк · {reactions[index].dislikes}
+                      <ThumbsDown
+                        aria-hidden="true"
+                        className={styles.actionButtonIcon}
+                        strokeWidth={1.75}
+                      />
+                      <span>Дизлайк · {reactions[index].dislikes}</span>
                     </button>
                   </div>
                   <span className={styles.postViews}>{post.views}</span>
