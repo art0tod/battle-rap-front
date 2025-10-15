@@ -5,10 +5,10 @@ import Link from "next/link";
 import styles from "./styles.module.css";
 
 const links = [
-  { href: "/posts", title: "Посты" },
+  { href: "/#posts-section", title: "Посты" },
   { href: "/members", title: "Участники" },
   { href: "/judges", title: "Судьи" },
-  { href: "/judges-ratings", title: "Рейтинг судей" },
+  { href: "/#judges-rating-section", title: "Рейтинг судей" },
 ];
 
 export default function Header() {

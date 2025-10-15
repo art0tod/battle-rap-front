@@ -131,7 +131,7 @@ export default function PostsSection() {
   };
 
   return (
-    <section className={styles.root}>
+    <section id="posts-section" className={styles.root}>
       <div className={styles.content + " " + "content-width"}>
         <div className={styles.titleRow}>
           <span className={styles.titleLine} aria-hidden="true" />

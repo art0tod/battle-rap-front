@@ -155,7 +155,7 @@ export default function BattleRatingSection() {
   );
 
   return (
-    <section className={styles.root}>
+    <section id="judges-rating-section" className={styles.root}>
       <div className={`${styles.content} content-width`}>
         <header className={styles.header}>
           <div className={styles.titles}>

@@ -1,5 +1,6 @@
 .root {
   padding-block: 6rem;
+  scroll-margin-top: 180px;
 }
 
 .content {
