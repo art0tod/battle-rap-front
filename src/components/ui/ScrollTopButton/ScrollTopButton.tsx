@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import styles from "./styles.module.css";
+import { PLAYER_VISIBILITY_OFFSET } from "@/components/layout/MusicPlayer/usePlayerVisibility";
 
-const VISIBILITY_OFFSET = 400;
+const VISIBILITY_OFFSET = PLAYER_VISIBILITY_OFFSET;
 
 export default function ScrollTopButton() {
   const [isVisible, setIsVisible] = useState(false);

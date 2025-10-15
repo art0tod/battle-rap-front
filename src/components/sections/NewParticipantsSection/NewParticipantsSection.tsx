@@ -7,32 +7,32 @@ const participants = [
   {
     name: "Nova",
     tag: "Северная школа",
-    image: "/participants/photo.png",
+    image: "/participants/photo.jpg",
   },
   {
     name: "Гром",
     tag: "Улица",
-    image: "/participants/photo.png",
+    image: "/participants/photo.jpg",
   },
   {
     name: "Вектор",
     tag: "Новая волна",
-    image: "/participants/photo.png",
+    image: "/participants/photo.jpg",
   },
   {
     name: "Резонанс",
     tag: "Эксперимент",
-    image: "/participants/photo.png",
+    image: "/participants/photo.jpg",
   },
   {
     name: "Факел",
     tag: "Юг",
-    image: "/participants/photo.png",
+    image: "/participants/photo.jpg",
   },
   {
     name: "Дым",
     tag: "Подполье",
-    image: "/participants/photo.png",
+    image: "/participants/photo.jpg",
   },
 ];
 

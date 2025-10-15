@@ -14,7 +14,7 @@ const siteLinks = [
 ]
 
 export default function Footer() {
-  return <footer className={styles.root + " " + "content-width"}>
+  return <footer id="site-footer" className={styles.root + " " + "content-width"}>
     <div className={styles.footer__container}>
       <div className={styles.wrapper}>
         <div className={styles.footer__titleContainer}>

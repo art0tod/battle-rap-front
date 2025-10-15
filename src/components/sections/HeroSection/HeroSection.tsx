@@ -6,7 +6,7 @@ export default function HeroSection() {
     "БАТТЛ • ПРОЕКТ • ХИП-ХОП.РУ • НОВЫЕ ИМЕНА • СТАРИЧКИ • РИФМЫ • ПАНЧЛАЙНЫ • БАТТЛ • ПРОЕКТ • ХИП-ХОП.РУ • НОВЫЕ ИМЕНА • СТАРИЧКИ • РИФМЫ • БАТТЛ • ПРОЕКТ • ХИП-ХОП.РУ • НОВЫЕ ИМЕНА •";
 
   return (
-    <section className={styles.root}>
+    <section id="hero-section" className={styles.root}>
       <div className={styles.content + " " + "content-width"}>
         <Link href={"/participate "} className={styles.participate}>
           Принять участие
