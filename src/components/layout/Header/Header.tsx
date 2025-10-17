@@ -11,7 +11,7 @@ import { useAuth } from "@/components/auth/AuthProvider/AuthProvider";
 const links = [
   { href: "/#posts-section", title: "Посты" },
   { href: "/members", title: "Участники" },
-  { href: "/judges", title: "Судьи" },
+  { href: "/members?role=judge", title: "Судьи" },
   { href: "/#judges-rating-section", title: "Рейтинг судей" },
 ];
 
