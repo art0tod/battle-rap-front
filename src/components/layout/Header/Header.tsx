@@ -9,6 +9,7 @@ import AuthModal, {
 import { useAuth } from "@/components/auth/AuthProvider/AuthProvider";
 
 const links = [
+  { href: "/", title: "Баттлы" },
   { href: "/#posts-section", title: "Посты" },
   { href: "/members", title: "Участники" },
   { href: "/members?role=judge", title: "Судьи" },
@@ -49,7 +50,7 @@ export default function Header() {
       <div className={`${styles.content} content-width`}>
         <div className={styles.logo}>
           <Link className={styles.logoLink} href={"/"}>
-            <span className={styles.logoText}>Баттлы</span>
+            <span className={styles.logoText}>Главная</span>
           </Link>
         </div>
         <nav className={styles.navBar}>
