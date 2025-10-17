@@ -2,6 +2,7 @@
 
 import {
   FormEvent,
+  JSX,
   useEffect,
   useMemo,
   useRef,
@@ -21,9 +22,24 @@ const submitLabel = "Отправить заявку";
 
 const inputFields = [
   { name: "fullName", placeholder: "ФИО", autoComplete: "name", type: "text" },
-  { name: "nickname", placeholder: "Никнейм", autoComplete: "nickname", type: "text" },
-  { name: "city", placeholder: "Город", autoComplete: "address-level2", type: "text" },
-  { name: "contacts", placeholder: "Контакты", autoComplete: "tel", type: "text" },
+  {
+    name: "nickname",
+    placeholder: "Никнейм",
+    autoComplete: "nickname",
+    type: "text",
+  },
+  {
+    name: "city",
+    placeholder: "Город",
+    autoComplete: "address-level2",
+    type: "text",
+  },
+  {
+    name: "vkId",
+    placeholder: "VK ID",
+    autoComplete: "username",
+    type: "text",
+  },
   { name: "email", placeholder: "Почта", autoComplete: "email", type: "email" },
   {
     name: "password",
@@ -31,10 +47,32 @@ const inputFields = [
     autoComplete: "new-password",
     type: "password",
   },
-  { name: "age", placeholder: "Возраст", autoComplete: "off", type: "number", min: 0 },
+  {
+    name: "age",
+    placeholder: "Возраст",
+    autoComplete: "off",
+    type: "number",
+    min: 0,
+  },
 ] as const;
 
-export default function ParticipationModal({ isOpen, onClose }: ParticipationModalProps) {
+type ParticipationField = (typeof inputFields)[number];
+type FieldName = ParticipationField["name"];
+
+const fieldOrder: FieldName[] = [
+  "fullName",
+  "nickname",
+  "city",
+  "age",
+  "vkId",
+  "email",
+  "password",
+] as const;
+
+export default function ParticipationModal({
+  isOpen,
+  onClose,
+}: ParticipationModalProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -133,6 +171,62 @@ export default function ParticipationModal({ isOpen, onClose }: ParticipationMod
 
   const formIsProcessing = false;
 
+  const renderInputField = (
+    field: ParticipationField | undefined,
+    extraClassName?: string,
+    keyOverride?: string
+  ) => {
+    if (!field) {
+      return null;
+    }
+
+    return (
+      <input
+        key={keyOverride ?? field.name}
+        autoComplete={field.autoComplete}
+        className={[modalStyles.input, extraClassName ?? ""]
+          .filter(Boolean)
+          .join(" ")}
+        name={field.name}
+        placeholder={field.placeholder}
+        required
+        type={field.type}
+        {...("min" in field ? { min: field.min } : {})}
+      />
+    );
+  };
+
+  const formFields = fieldOrder.reduce<JSX.Element[]>((elements, fieldName) => {
+    if (fieldName === "city") {
+      const cityField = inputFields.find((field) => field.name === "city");
+      const ageField = inputFields.find((field) => field.name === "age");
+
+      elements.push(
+        <div className={styles.inlineFieldRow} key="city-age-row">
+          {renderInputField(cityField, styles.inlineInput, "city")}
+          {renderInputField(ageField, styles.inlineInput, "age")}
+        </div>
+      );
+
+      return elements;
+    }
+
+    if (fieldName === "age") {
+      return elements;
+    }
+
+    const field = inputFields.find(
+      (currentField) => currentField.name === fieldName
+    );
+    const renderedField = renderInputField(field);
+
+    if (renderedField) {
+      elements.push(renderedField);
+    }
+
+    return elements;
+  }, []);
+
   const modalClassNames = useMemo(() => {
     return [
       modalStyles.modal,
@@ -149,7 +243,10 @@ export default function ParticipationModal({ isOpen, onClose }: ParticipationMod
 
   return createPortal(
     <div
-      className={[modalStyles.backdrop, isClosing ? modalStyles.backdropClosing : ""]
+      className={[
+        modalStyles.backdrop,
+        isClosing ? modalStyles.backdropClosing : "",
+      ]
         .filter(Boolean)
         .join(" ")}
       data-component="participation-modal-backdrop"
@@ -177,20 +274,7 @@ export default function ParticipationModal({ isOpen, onClose }: ParticipationMod
         </header>
 
         <form className={styles.form} onSubmit={handleSubmit}>
-          <fieldset className={modalStyles.fieldset}>
-            {inputFields.map((field) => (
-              <input
-                key={field.name}
-                autoComplete={field.autoComplete}
-                className={modalStyles.input}
-                name={field.name}
-                placeholder={field.placeholder}
-                required
-                type={field.type}
-                {...("min" in field ? { min: field.min } : {})}
-              />
-            ))}
-          </fieldset>
+          <fieldset className={modalStyles.fieldset}>{formFields}</fieldset>
 
           <div className={styles.inlineButtons}>
             <button
@@ -200,6 +284,13 @@ export default function ParticipationModal({ isOpen, onClose }: ParticipationMod
             >
               Загрузить трек
             </button>
+
+            <input
+              className={[modalStyles.input, styles.beatAuthorInline].join(" ")}
+              name="beatAuthor"
+              placeholder="Автор бита"
+              type="text"
+            />
           </div>
 
           <input
@@ -212,15 +303,13 @@ export default function ParticipationModal({ isOpen, onClose }: ParticipationMod
             type="file"
           />
 
-          <input
-            className={[modalStyles.input, styles.beatAuthorInput].join(" ")}
-            name="beatAuthor"
-            placeholder="Автор бита"
-            type="text"
-          />
-
           <label className={styles.termsRow}>
-            <input className={styles.checkbox} name="termsAcceptance" required type="checkbox" />
+            <input
+              className={styles.checkbox}
+              name="termsAcceptance"
+              required
+              type="checkbox"
+            />
             <span className={styles.termsText}>
               Согласен с{" "}
               <a className={modalStyles.registerLink} href="/terms">
@@ -236,16 +325,24 @@ export default function ParticipationModal({ isOpen, onClose }: ParticipationMod
           ) : null}
 
           <div className={styles.actions}>
-            <button className={styles.submitButton} disabled={formIsProcessing} type="submit">
+            <button
+              className={styles.submitButton}
+              disabled={formIsProcessing}
+              type="submit"
+            >
               {formIsProcessing ? "Отправка..." : submitLabel}
             </button>
-            <button className={styles.secondaryButton} onClick={onClose} type="button">
+            <button
+              className={styles.secondaryButton}
+              onClick={onClose}
+              type="button"
+            >
               Отмена
             </button>
           </div>
         </form>
       </section>
     </div>,
-    document.body,
+    document.body
   );
 }

@@ -133,6 +133,18 @@
   font-weight: 600;
 }
 
+.participantLink {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.participantLink:hover,
+.participantLink:focus-visible {
+  color: #ff9500;
+  outline: none;
+}
+
 .positionBadge {
   display: inline-flex;
   align-items: center;

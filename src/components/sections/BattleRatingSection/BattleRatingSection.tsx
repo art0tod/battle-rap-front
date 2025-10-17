@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import styles from "./styles.module.css";
 
@@ -194,7 +195,14 @@ export default function BattleRatingSection() {
                   <td>
                     <span className={styles.positionBadge}>{index + 1}</span>
                   </td>
-                  <td>{participant.name}</td>
+                  <td>
+                    <Link
+                      className={styles.participantLink}
+                      href={`/profile?name=${encodeURIComponent(participant.name)}`}
+                    >
+                      {participant.name}
+                    </Link>
+                  </td>
                   <td>{participant.score}</td>
                 </tr>
               ))}
