@@ -97,6 +97,18 @@
   text-transform: uppercase;
 }
 
+.cardNameLink {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.cardNameLink:hover,
+.cardNameLink:focus-visible {
+  color: #ff9500;
+  outline: none;
+}
+
 .cardButton {
   position: relative;
   align-self: flex-start;

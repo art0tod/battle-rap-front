@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 import styles from "./styles.module.css";
 
@@ -212,7 +213,14 @@ export default function NewParticipantsSection() {
               style={{ backgroundImage: `url(${participant.image})` }}
             >
               <span className={styles.cardTag}>{participant.tag}</span>
-              <h3 className={styles.cardName}>{participant.name}</h3>
+              <h3 className={styles.cardName}>
+                <Link
+                  className={styles.cardNameLink}
+                  href={`/profile?name=${encodeURIComponent(participant.name)}`}
+                >
+                  {participant.name}
+                </Link>
+              </h3>
               <button className={styles.cardButton}>Бросить вызов</button>
             </article>
           ))}

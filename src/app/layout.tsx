@@ -4,7 +4,7 @@ import "./globals.css";
 import Header from "@/components/layout/Header/Header";
 import Footer from "@/components/layout/Footer/Footer";
 import ScrollTopButton from "@/components/ui/ScrollTopButton/ScrollTopButton";
-import MusicPlayer from "@/components/layout/MusicPlayer/MusicPlayer";
+import MusicPlayerVisibility from "@/components/layout/MusicPlayer/MusicPlayerVisibility";
 import Providers from "./providers";
 
 const montserrat = Montserrat({
@@ -29,7 +29,7 @@ export default function RootLayout({
         <Providers>
           <Header />
           {children}
-          <MusicPlayer />
+          <MusicPlayerVisibility />
           <ScrollTopButton />
           <Footer />
         </Providers>

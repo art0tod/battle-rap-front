@@ -9,7 +9,7 @@ export default function ProfileSection() {
     rating: 124,
     city: "Москва",
     age: 27,
-    image: "/participants/photo.png",
+    image: "/participants/photo.jpg",
   };
 
   return (

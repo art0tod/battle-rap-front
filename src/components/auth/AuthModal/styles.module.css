@@ -18,7 +18,7 @@
   /* width: min(480px, 100%); */
   width: 643px;
   /* height: 559px; */
-  padding: 20px 52px 64px 52px;
+  padding: 20px 52px 50px 52px;
   /* max-height: min(640px, calc(100vh - 2rem)); */
   height: fit-content;
   overflow: auto;
