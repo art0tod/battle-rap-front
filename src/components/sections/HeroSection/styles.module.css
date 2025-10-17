@@ -30,11 +30,13 @@
   padding: 2rem 2.2rem;
   background: linear-gradient(98.67deg, #ff9500 13.13%, #ff5900 152.73%);
   border-radius: 10px;
-
+  border: none;
+  color: #ffffff;
   font-weight: 700;
   font-size: 1.6rem;
   box-shadow: 0 0 18px rgba(255, 149, 0, 0.35);
   transition: box-shadow 0.2s ease;
+  cursor: pointer;
 }
 
 .participate:hover,

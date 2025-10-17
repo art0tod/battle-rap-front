@@ -1,5 +1,10 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import styles from "./styles.module.css";
 import Link from "next/link";
+import AuthModal, { type AuthMode } from "@/components/auth/AuthModal/AuthModal";
+import { useAuth } from "@/components/auth/AuthProvider/AuthProvider";
 
 const socialLinks = [
   { href: "https://vk.com", title: "VK", iconSrc: "/vk.svg" },
@@ -14,6 +19,16 @@ const siteLinks = [
 ]
 
 export default function Footer() {
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<AuthMode>("signIn");
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user && isAuthModalOpen) {
+      setIsAuthModalOpen(false);
+    }
+  }, [user, isAuthModalOpen]);
+
   return <footer id="site-footer" className={styles.root + " " + "content-width"}>
     <div className={styles.footer__container}>
       <div className={styles.wrapper}>
@@ -33,7 +48,15 @@ export default function Footer() {
               ))}
           </ul>
         </div>
-        <Link className={styles.cta} href={"/register"}>
+        <Link
+          className={styles.cta}
+          href={"/profile"}
+          onClick={(event) => {
+            event.preventDefault();
+            setAuthMode("signIn");
+            setIsAuthModalOpen(true);
+          }}
+        >
           Войти
         </Link>   
       </div>
@@ -60,5 +83,11 @@ export default function Footer() {
           <p className={styles.footer__copyright}>© 2025 HipHop.ru. Все права защищены.</p>
       </div>
     </div>
+    <AuthModal
+      isOpen={isAuthModalOpen}
+      mode={authMode}
+      onClose={() => setIsAuthModalOpen(false)}
+      onModeChange={setAuthMode}
+    />
   </footer>;
 }
