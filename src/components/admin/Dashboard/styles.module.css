@@ -1,0 +1,114 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.title {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.description {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 0.3rem;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.timestamp {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.refreshButton {
+  padding: 0.55rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 149, 0, 0.45);
+  background: rgba(255, 149, 0, 0.16);
+  color: #ffd7a6;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.refreshButton:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.refreshButton:not(:disabled):hover {
+  background: rgba(255, 149, 0, 0.25);
+  border-color: rgba(255, 149, 0, 0.6);
+}
+
+.errorBox {
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 59, 59, 0.4);
+  background: rgba(255, 59, 59, 0.12);
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.retryButton {
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.statGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.placeholder {
+  grid-column: 1 / -1;
+  padding: 2rem;
+  text-align: center;
+  border-radius: 12px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.statCard {
+  padding: 1.25rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(20, 20, 20, 0.9);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.statLabel {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.statValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+}

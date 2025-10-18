@@ -48,6 +48,26 @@ export class ApiError extends Error {
   }
 }
 
+function isAbsoluteUrl(value: string): boolean {
+  return /^https?:\/\//i.test(value);
+}
+
+function createTargetUrl(baseUrl: string, path: string): { url: URL; isRelative: boolean } {
+  if (isAbsoluteUrl(path)) {
+    return { url: new URL(path), isRelative: false };
+  }
+
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+
+  if (isAbsoluteUrl(baseUrl)) {
+    return { url: new URL(`${baseUrl}${normalizedPath}`), isRelative: false };
+  }
+
+  const normalizedBase = baseUrl.startsWith("/") ? baseUrl : `/${baseUrl}`;
+  const placeholder = new URL(`${normalizedBase}${normalizedPath}`, "http://local-proxy");
+  return { url: placeholder, isRelative: true };
+}
+
 function isJsonLikeBody(body: unknown): body is Record<string, unknown> | unknown[] {
   if (body === null || body === undefined) {
     return false;
@@ -118,10 +138,9 @@ async function parseResponseBody(response: Response): Promise<unknown> {
 
 function prepareRequest(path: string, options: ApiRequestOptions, overrides?: ApiClientOptions): InternalRequestOptions {
   const baseUrl = resolveBaseUrl(options, overrides);
-  const target = path.startsWith("http")
-    ? new URL(path)
-    : new URL(`${baseUrl}${path.startsWith("/") ? path : `/${path}`}`);
+  const { url: target, isRelative } = createTargetUrl(baseUrl, path);
   applyQueryParams(target, options.query);
+  const resolvedUrl = isRelative ? `${target.pathname}${target.search}` : target.toString();
 
   const headers = sanitizeHeaders(options.headers ?? overrides?.defaultHeaders);
   const token = options.token ?? overrides?.token;
@@ -142,7 +161,7 @@ function prepareRequest(path: string, options: ApiRequestOptions, overrides?: Ap
     ...rest,
     baseUrl,
     headers,
-    url: target.toString(),
+    url: resolvedUrl,
   };
 
   if (body !== undefined && body !== null) {
@@ -166,6 +185,16 @@ async function baseRequest<T>(
 ): Promise<T> {
   const request = prepareRequest(path, options, overrides);
   const { url, baseUrl: _baseUrl, query: _query, token: _token, ...init } = request;
+
+  if (!init.cache) {
+    init.cache = "no-store";
+  }
+  if (!init.credentials) {
+    init.credentials = "include";
+  }
+  if (!init.headers.has("Accept")) {
+    init.headers.set("Accept", "application/json");
+  }
 
   const response = await fetch(url, init);
   const payload = await parseResponseBody(response);

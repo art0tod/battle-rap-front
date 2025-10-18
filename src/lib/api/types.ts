@@ -1,134 +1,141 @@
-export type UserRole = "admin" | "moderator" | "judge" | "artist" | "user";
+export type UserRole = "admin" | "moderator" | "judge" | "artist" | "listener" | "user";
 
-export interface BaseEntity {
+export interface AuthUser {
   id: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface ArtistProfile {
-  userId: string;
-  avatarKey?: string | null;
-  bio?: string | null;
-  socials?: Record<string, string>;
-}
-
-export interface User extends BaseEntity {
   email: string;
   displayName: string;
   roles: UserRole[];
-  artistProfile?: ArtistProfile | null;
 }
 
-export type TournamentStatus = "draft" | "active" | "finished";
-
-export interface Tournament extends BaseEntity {
-  title: string;
-  status: TournamentStatus;
-  maxBracketSize: 128 | 256;
-  startsAt?: string | null;
-  endsAt?: string | null;
-  coverKey?: string | null;
-  description?: string | null;
+export interface ProfileViewerContext {
+  isSelf: boolean;
+  canEdit: boolean;
+  canModerate: boolean;
+  canViewPrivate: boolean;
 }
 
-export type RoundKind = "qualifier1" | "qualifier2" | "bracket";
-export type RoundScoring = "pass_fail" | "points" | "rubric";
-export type RoundStatus = TournamentStatus;
-
-export interface Round extends BaseEntity {
-  tournamentId: string;
-  kind: RoundKind;
-  number: number;
-  scoring: RoundScoring;
-  status: RoundStatus;
-  rubricKeys?: string[];
-}
-
-export interface EvaluationCriterion {
+export interface ProfileAvatar {
   key: string;
-  label: string;
-  maxScore?: number;
-  description?: string;
+  url: string;
 }
 
-export interface TournamentParticipant extends BaseEntity {
-  tournamentId: string;
-  userId: string;
-  seed?: number | null;
+export interface UserProfile {
+  id: string;
+  displayName: string;
+  roles: UserRole[];
+  createdAt: string;
+  updatedAt: string;
+  viewerContext: ProfileViewerContext;
+  avatar?: ProfileAvatar | null;
+  bio?: string | null;
+  city?: string | null;
+  email?: string | null;
+  age?: number | null;
+  vkId?: string | null;
+  fullName?: string | null;
+  socials?: Record<string, unknown> | null;
 }
 
-export interface TournamentJudge extends BaseEntity {
-  tournamentId: string;
-  userId: string;
+export interface AuthSession {
+  accessToken: string;
+  tokenType: string;
+  expiresIn: number;
+  user: AuthUser;
 }
 
-export type SubmissionStatus = "draft" | "submitted" | "locked" | "disqualified";
-
-export interface Submission extends BaseEntity {
-  roundId: string;
-  participantId: string;
-  audioId: string;
-  lyrics?: string | null;
-  status: SubmissionStatus;
+export interface RefreshTokens {
+  accessToken: string;
+  tokenType: string;
+  expiresIn: number;
 }
 
-export interface Match extends BaseEntity {
-  roundId: string;
-  startsAt?: string | null;
-  locked?: boolean;
-  status?: "scheduled" | "completed" | "in_progress";
+export interface AdminUser {
+  id: string;
+  email: string;
+  displayName: string;
+  roles: UserRole[];
+  createdAt: string;
+  updatedAt: string;
+  lastLoginAt?: string | null;
 }
 
-export interface MatchParticipant extends BaseEntity {
-  matchId: string;
-  participantId: string;
-  seed?: number | null;
+export interface AdminUserList {
+  data: AdminUser[];
+  page: number;
+  limit: number;
+  total: number;
 }
 
-export interface Track extends BaseEntity {
-  matchId: string;
-  participantId: string;
-  audioId: string;
-  lyrics?: string | null;
+export type UploadAssetKind = "audio" | "image";
+
+export interface PresignUploadPayload {
+  filename: string;
+  mime: string;
+  sizeBytes: number;
+  type: UploadAssetKind;
 }
 
-export type MediaKind = "audio" | "video" | "image" | "document";
+export interface PresignUploadResponse {
+  assetId: string;
+  storageKey: string;
+  uploadUrl: string;
+  headers: Record<string, string>;
+}
 
-export interface MediaAsset extends BaseEntity {
-  kind: MediaKind;
+export interface CompleteUploadPayload {
+  assetId: string;
   storageKey: string;
   mime: string;
   sizeBytes: number;
-  durationSec?: number | null;
+  kind: UploadAssetKind;
 }
 
-export interface SubmissionEvaluation extends BaseEntity {
-  submissionId: string;
-  judgeId: string;
-  pass?: boolean;
-  score?: number | null;
-  comment?: string | null;
+export interface MediaAssetStatus {
+  id: string;
+  status: string;
 }
 
-export interface MatchEvaluation extends BaseEntity {
-  matchId: string;
-  judgeId: string;
-  rubric?: Record<string, number>;
-  comment?: string | null;
+export interface ModerationSubmission {
+  id: string;
+  status: string;
+  submittedAt?: string | null;
+  updatedAt: string;
+  lyrics?: string | null;
+  round: {
+    id: string;
+    number: number;
+    kind: string;
+    tournamentId: string;
+    tournamentTitle: string;
+  };
+  artist: {
+    id: string;
+    displayName: string;
+    email: string;
+  };
+  audio: {
+    id: string;
+    mime: string;
+    status: string;
+    url?: string | null;
+  };
 }
 
-export interface DashboardStats {
-  totalUsers: number;
-  activeTournaments: number;
-  submissions: number;
-  judges: number;
-  [key: string]: number;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  total: number;
+export interface ModerationSubmissionList {
+  data: ModerationSubmission[];
+  page: number;
   limit: number;
-  offset: number;
+  total: number;
+}
+
+export type RoleChangeOperation = "grant" | "revoke";
+
+export interface RoleChangePayload {
+  op: RoleChangeOperation;
+  role: Exclude<UserRole, "user">;
+}
+
+export interface UserRolesState {
+  userId: string;
+  roles: UserRole[];
 }

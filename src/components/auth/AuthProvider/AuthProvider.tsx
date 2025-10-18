@@ -4,10 +4,10 @@ import { createContext, useContext, useEffect, useMemo, useState, useCallback } 
 import type { ReactNode } from "react";
 import {
   battleRapApi,
-  type AuthResponse,
+  type AuthSession,
   type LoginPayload,
   type RegisterPayload,
-  type User,
+  type UserProfile,
 } from "@/lib/api";
 import { ApiError } from "@/lib/api/httpClient";
 import {
@@ -18,14 +18,14 @@ import {
 } from "@/lib/auth/tokenStorage";
 
 interface AuthContextValue {
-  user: User | null;
+  user: UserProfile | null;
   token: string | null;
   isInitializing: boolean;
   isProcessing: boolean;
-  login: (payload: LoginPayload) => Promise<AuthResponse>;
-  register: (payload: RegisterPayload) => Promise<AuthResponse>;
+  login: (payload: LoginPayload) => Promise<UserProfile>;
+  register: (payload: RegisterPayload) => Promise<UserProfile>;
   logout: () => void;
-  refreshUser: () => Promise<User | null>;
+  refreshUser: () => Promise<UserProfile | null>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -40,25 +40,28 @@ function resolveApiErrorMessage(error: unknown): string {
   return "Не удалось выполнить запрос. Попробуйте снова.";
 }
 
-type StoredUserSnapshot = User;
+type StoredUserSnapshot = UserProfile;
 
-function serializeAuthState(token: string, user: User): StoredAuthState<StoredUserSnapshot> {
+function serializeAuthState(token: string, user: UserProfile): StoredAuthState<StoredUserSnapshot> {
   return { token, user };
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [initialAuth] = useState<StoredAuthState<StoredUserSnapshot> | null>(() =>
-    readAuthState<StoredUserSnapshot>(),
-  );
-  const [user, setUser] = useState<User | null>(initialAuth?.user ?? null);
-  const [token, setToken] = useState<string | null>(initialAuth?.token ?? null);
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     let isActive = true;
 
-    const storedAuth = initialAuth;
+    if (typeof window === "undefined") {
+      return () => {
+        isActive = false;
+      };
+    }
+
+    const storedAuth = readAuthState<StoredUserSnapshot>();
     if (!storedAuth?.token) {
       setIsInitializing(false);
       return () => {
@@ -66,14 +69,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
     }
 
-    battleRapApi.users
-      .getCurrentUser({ token: storedAuth.token })
-      .then((response) => {
+    setToken(storedAuth.token);
+    setUser(storedAuth.user ?? null);
+
+    battleRapApi.profiles
+      .getAuthenticated({ token: storedAuth.token })
+      .then((profile) => {
         if (!isActive) {
           return;
         }
-        setUser(response.user);
-        writeAuthState(serializeAuthState(storedAuth.token, response.user));
+        setUser(profile);
+        writeAuthState(serializeAuthState(storedAuth.token, profile));
       })
       .catch((error: unknown) => {
         if (!isActive) {
@@ -95,51 +101,60 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       isActive = false;
     };
-  }, [initialAuth]);
-
-  const applyAuthResponse = useCallback((response: AuthResponse) => {
-    writeAuthState(serializeAuthState(response.token, response.user));
-    setToken(response.token);
-    setUser(response.user);
   }, []);
 
-  const login = useCallback(async (payload: LoginPayload): Promise<AuthResponse> => {
-    setIsProcessing(true);
-    try {
-      const response = await battleRapApi.auth.login(payload);
-      applyAuthResponse(response);
-      return response;
-    } catch (error) {
-      throw new Error(resolveApiErrorMessage(error));
-    } finally {
-      setIsProcessing(false);
-    }
-  }, [applyAuthResponse]);
+  const applyAuthSession = useCallback(
+    async (session: AuthSession): Promise<UserProfile> => {
+      const profile = await battleRapApi.profiles.getAuthenticated({ token: session.accessToken });
+      writeAuthState(serializeAuthState(session.accessToken, profile));
+      setToken(session.accessToken);
+      setUser(profile);
+      return profile;
+    },
+    [],
+  );
 
-  const register = useCallback(async (payload: RegisterPayload): Promise<AuthResponse> => {
-    setIsProcessing(true);
-    try {
-      const response = await battleRapApi.auth.register(payload);
-      applyAuthResponse(response);
-      return response;
-    } catch (error) {
-      throw new Error(resolveApiErrorMessage(error));
-    } finally {
-      setIsProcessing(false);
-    }
-  }, [applyAuthResponse]);
+  const login = useCallback(
+    async (payload: LoginPayload): Promise<UserProfile> => {
+      setIsProcessing(true);
+      try {
+        const session = await battleRapApi.auth.login(payload);
+        return await applyAuthSession(session);
+      } catch (error) {
+        throw new Error(resolveApiErrorMessage(error));
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [applyAuthSession],
+  );
 
-  const refreshUser = useCallback(async (): Promise<User | null> => {
+  const register = useCallback(
+    async (payload: RegisterPayload): Promise<UserProfile> => {
+      setIsProcessing(true);
+      try {
+        const session = await battleRapApi.auth.register(payload);
+        return await applyAuthSession(session);
+      } catch (error) {
+        throw new Error(resolveApiErrorMessage(error));
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [applyAuthSession],
+  );
+
+  const refreshUser = useCallback(async (): Promise<UserProfile | null> => {
     if (!token) {
       setUser(null);
       return null;
     }
 
     try {
-      const response = await battleRapApi.users.getCurrentUser({ token });
-      setUser(response.user);
-      writeAuthState(serializeAuthState(token, response.user));
-      return response.user;
+      const profile = await battleRapApi.profiles.getAuthenticated({ token });
+      setUser(profile);
+      writeAuthState(serializeAuthState(token, profile));
+      return profile;
     } catch (error: unknown) {
       if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
         clearAuthState();
@@ -149,13 +164,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       return user;
     }
-  }, [token]);
+  }, [token, user]);
 
   const logout = useCallback(() => {
+    if (token) {
+      void battleRapApi.auth.logout({ token }).catch(() => {
+        // Swallow logout errors to avoid breaking client-side state reset.
+      });
+    }
     clearAuthState();
     setToken(null);
     setUser(null);
-  }, []);
+  }, [token]);
 
   const value = useMemo<AuthContextValue>(
     () => ({

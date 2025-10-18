@@ -1,90 +1,75 @@
 import type { ApiClient, ApiRequestOptions } from "../httpClient";
 import { apiClient } from "../httpClient";
+import {
+  mapAdminUserList,
+  mapProfileView,
+  mapUserRolesState,
+  type ApiAdminUserListResponse,
+  type ApiProfileView,
+  type ApiUserRolesState,
+} from "../mappers";
 import type {
-  DashboardStats,
-  MediaAsset,
-  MediaKind,
-  Submission,
-  SubmissionStatus,
-  User,
+  AdminUserList,
+  RoleChangePayload,
+  UserProfile,
+  UserRole,
+  UserRolesState,
 } from "../types";
 
-export interface DashboardResponse {
-  stats: DashboardStats;
-}
+const ADMIN_ROOT = "/api/v1/admin";
+const USERS_ROOT = `${ADMIN_ROOT}/users`;
+const ROLES_ROOT = `${ADMIN_ROOT}/roles`;
 
-export interface AdminUsersResponse {
-  users: User[];
-}
-
-export interface ModerateSubmissionPayload {
-  locked: boolean;
-  status?: SubmissionStatus;
-}
-
-export interface SubmissionResponse {
-  submission: Submission;
-}
-
-export interface RegisterMediaAssetPayload {
-  kind: MediaKind;
-  storageKey: string;
-  mime: string;
-  sizeBytes: number;
-  durationSec?: number;
-}
-
-export interface MediaAssetResponse {
-  media: MediaAsset;
-}
-
-export interface MediaAssetsResponse {
-  mediaAssets: MediaAsset[];
-}
-
-export interface ListMediaAssetsParams {
-  kind?: MediaKind;
+export interface ListUsersParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  role?: Exclude<UserRole, "user">;
+  sort?: "created_at" | "-created_at" | "display_name" | "-display_name";
 }
 
 export interface AdminApi {
-  getDashboard: (options?: ApiRequestOptions) => Promise<DashboardResponse>;
-  listUsers: (options?: ApiRequestOptions) => Promise<AdminUsersResponse>;
-  moderateSubmission: (
-    submissionId: string,
-    payload: ModerateSubmissionPayload,
+  listUsers: (params?: ListUsersParams, options?: ApiRequestOptions) => Promise<AdminUserList>;
+  getUser: (userId: string, options?: ApiRequestOptions) => Promise<UserProfile>;
+  setUserRole: (
+    userId: string,
+    payload: RoleChangePayload,
     options?: ApiRequestOptions,
-  ) => Promise<SubmissionResponse>;
-  registerMediaAsset: (
-    payload: RegisterMediaAssetPayload,
-    options?: ApiRequestOptions,
-  ) => Promise<MediaAssetResponse>;
-  listMediaAssets: (
-    params?: ListMediaAssetsParams,
-    options?: ApiRequestOptions,
-  ) => Promise<MediaAssetsResponse>;
+  ) => Promise<UserRolesState>;
 }
 
 export function createAdminApi(client: ApiClient = apiClient): AdminApi {
   return {
-    getDashboard: (options) => client.get<DashboardResponse>("/admin/dashboard", options),
-    listUsers: (options) => client.get<AdminUsersResponse>("/admin/users", options),
-    moderateSubmission: (submissionId, payload, options) =>
-      client.patch<SubmissionResponse>(
-        `/admin/submissions/${submissionId}/moderation`,
-        payload,
-        options,
-      ),
-    registerMediaAsset: (payload, options) =>
-      client.post<MediaAssetResponse>("/admin/media-assets", payload, options),
-    listMediaAssets: (params, options) => {
-      const mergedOptions: ApiRequestOptions = {
+    async listUsers(params, options) {
+      const query = {
+        ...(params?.page ? { page: params.page } : {}),
+        ...(params?.limit ? { limit: params.limit } : {}),
+        ...(params?.search ? { search: params.search } : {}),
+        ...(params?.role ? { role: params.role } : {}),
+        ...(params?.sort ? { sort: params.sort } : {}),
+      };
+
+      const response = await client.get<ApiAdminUserListResponse>(USERS_ROOT, {
         ...(options ?? {}),
         query: {
           ...(options?.query ?? {}),
-          ...(params ?? {}),
+          ...query,
         },
-      };
-      return client.get<MediaAssetsResponse>("/admin/media-assets", mergedOptions);
+      });
+
+      return mapAdminUserList(response);
+    },
+    async getUser(userId, options) {
+      const response = await client.get<ApiProfileView>(`${USERS_ROOT}/${userId}`, options);
+      return mapProfileView(response);
+    },
+    async setUserRole(userId, payload, options) {
+      const response = await client.post<ApiUserRolesState>(
+        `${ROLES_ROOT}/${userId}`,
+        payload,
+        options,
+      );
+      return mapUserRolesState(response);
     },
   };
 }

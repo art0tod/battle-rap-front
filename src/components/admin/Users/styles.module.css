@@ -1,0 +1,153 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.description {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 0.3rem;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.searchInput {
+  padding: 0.5rem 0.75rem;
+  min-width: 260px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(15, 15, 15, 0.9);
+  color: #f5f5f5;
+}
+
+.searchInput::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.refreshButton {
+  padding: 0.5rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 149, 0, 0.45);
+  background: rgba(255, 149, 0, 0.16);
+  color: #ffd7a6;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.refreshButton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.errorBox {
+  padding: 0.85rem 1.1rem;
+  border-radius: 10px;
+  background: rgba(255, 59, 59, 0.12);
+  border: 1px solid rgba(255, 59, 59, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.retryButton {
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 640px;
+  background: rgba(20, 20, 20, 0.92);
+}
+
+.table th,
+.table td {
+  padding: 0.9rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.table th {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.8rem;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.emptyCell {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.primaryCell {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.metaCell {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 0.25rem;
+}
+
+.mono {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 0.78rem;
+}
+
+.roleSelect {
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(15, 15, 15, 0.92);
+  color: #f5f5f5;
+  font-size: 0.8rem;
+}
+
+.roleSelect:focus {
+  outline: none;
+  border-color: rgba(255, 149, 0, 0.6);
+  box-shadow: 0 0 0 2px rgba(255, 149, 0, 0.15);
+}
+
+.roleSelect:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
