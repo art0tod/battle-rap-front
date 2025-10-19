@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { battleRapApi, type AdminUser, type UserRole } from "@/lib/api";
+import { normalizeUserRoles, roleOrder } from "@/lib/roles";
 import { useAuth } from "@/components/auth/AuthProvider/AuthProvider";
 import { resolveApiErrorMessage } from "../utils";
 import styles from "./styles.module.css";
@@ -23,7 +24,9 @@ export default function AdminUsers() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState("");
-  const [pendingRoleUpdates, setPendingRoleUpdates] = useState<Record<string, boolean>>({});
+  const [pendingRoleUpdates, setPendingRoleUpdates] = useState<
+    Record<string, boolean>
+  >({});
 
   const loadUsers = useCallback(async () => {
     if (!token) {
@@ -49,7 +52,9 @@ export default function AdminUsers() {
   const handleRoleChange = useCallback(
     async (userId: string, nextRole: ManagedRole | "") => {
       if (!token) {
-        setError("Нет токена авторизации. Перезайдите в аккаунт администратора.");
+        setError(
+          "Нет токена авторизации. Перезайдите в аккаунт администратора."
+        );
         return;
       }
       const targetUser = users.find((candidate) => candidate.id === userId);
@@ -66,9 +71,11 @@ export default function AdminUsers() {
       setError(null);
       try {
         const applyRoles = (roles: UserRole[]) => {
-          const normalized = normalizeRoles(roles);
+          const normalized = normalizeRolesInput(roles);
           setUsers((prev) =>
-            prev.map((user) => (user.id === userId ? { ...user, roles: normalized } : user)),
+            prev.map((user) =>
+              user.id === userId ? { ...user, roles: normalized } : user
+            )
           );
           return normalized;
         };
@@ -78,7 +85,7 @@ export default function AdminUsers() {
             const revokeResponse = await battleRapApi.admin.setUserRole(
               userId,
               { op: "revoke", role: currentRole },
-              { token },
+              { token }
             );
             applyRoles(revokeResponse.roles);
           }
@@ -87,14 +94,14 @@ export default function AdminUsers() {
             const revokeResponse = await battleRapApi.admin.setUserRole(
               userId,
               { op: "revoke", role: currentRole },
-              { token },
+              { token }
             );
             applyRoles(revokeResponse.roles);
           }
           const grantResponse = await battleRapApi.admin.setUserRole(
             userId,
             { op: "grant", role: normalizedNextRole },
-            { token },
+            { token }
           );
           applyRoles(grantResponse.roles);
         }
@@ -107,7 +114,7 @@ export default function AdminUsers() {
         });
       }
     },
-    [token, users],
+    [token, users]
   );
 
   const visibleUsers = useMemo(() => {
@@ -116,7 +123,9 @@ export default function AdminUsers() {
     }
     const lower = filter.trim().toLowerCase();
     return users.filter((user) => {
-      const haystack = `${user.displayName} ${user.email} ${user.roles.join(" ")}`.toLowerCase();
+      const haystack = `${user.displayName} ${user.email} ${user.roles.join(
+        " "
+      )}`.toLowerCase();
       return haystack.includes(lower);
     });
   }, [filter, users]);
@@ -225,39 +234,53 @@ export default function AdminUsers() {
   );
 }
 
-function normalizeRoles(
-  roles: UserRole[] | string | string[] | Record<string, unknown> | null | undefined,
+function normalizeRolesInput(
+  roles:
+    | UserRole[]
+    | string
+    | string[]
+    | Record<string, unknown>
+    | null
+    | undefined
 ): UserRole[] {
-  if (Array.isArray(roles)) {
-    return roles.map((role) => role.trim()).filter(Boolean) as UserRole[];
-  }
   if (!roles) {
     return [];
   }
-  if (typeof roles === "string") {
-    return roles
-      .split(/[,\s]+/)
-      .map((role) => role.trim())
-      .filter(Boolean) as UserRole[];
-  }
-  if (typeof roles === "object") {
-    return Object.entries(roles)
-      .filter(([, value]) => Boolean(value))
-      .map(([role]) => role.trim())
-      .filter(Boolean) as UserRole[];
-  }
-  return [];
+
+  const collect = (): Iterable<unknown> => {
+    if (Array.isArray(roles)) {
+      return roles;
+    }
+    if (typeof roles === "string") {
+      return roles
+        .split(/[,\s]+/)
+        .map((role) => role.trim())
+        .filter(Boolean);
+    }
+    if (typeof roles === "object") {
+      return Object.entries(roles)
+        .filter(([, value]) => Boolean(value))
+        .map(([role]) => role.trim());
+    }
+    return [];
+  };
+
+  return normalizeUserRoles(collect());
 }
 
 function getPrimaryRole(roles: UserRole[]): ManagedRole | null {
-  const manageableRoles = roles.filter((role): role is ManagedRole => role !== "user");
+  const manageableRoles = roles.filter(
+    (role): role is ManagedRole => role !== "user"
+  );
   if (manageableRoles.length === 0) {
     return null;
   }
-  const order = ROLE_OPTIONS.map((option) => option.value).filter(
-    (value): value is ManagedRole => value !== "",
+  const order = roleOrder.filter(
+    (candidate): candidate is ManagedRole => candidate !== "user"
   );
-  const sorted = manageableRoles.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+  const sorted = manageableRoles.sort(
+    (a, b) => order.indexOf(a) - order.indexOf(b)
+  );
   return sorted[0] ?? null;
 }
 
@@ -276,6 +299,6 @@ function translateRole(role: string): string {
 function normalizeUserRecord(user: AdminUser): AdminUser {
   return {
     ...user,
-    roles: normalizeRoles(user.roles),
+    roles: normalizeRolesInput(user.roles),
   };
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ChangeEvent,
   FormEvent,
   JSX,
   useEffect,
@@ -10,6 +11,9 @@ import {
   type MouseEvent as ReactMouseEvent,
 } from "react";
 import { createPortal } from "react-dom";
+import { battleRapApi, type SubmitApplicationPayload } from "@/lib/api";
+import { ApiError } from "@/lib/api";
+import { useAuth } from "@/components/auth/AuthProvider/AuthProvider";
 import modalStyles from "@/components/auth/AuthModal/styles.module.css";
 import styles from "./styles.module.css";
 
@@ -40,13 +44,6 @@ const inputFields = [
     autoComplete: "username",
     type: "text",
   },
-  { name: "email", placeholder: "Почта", autoComplete: "email", type: "email" },
-  {
-    name: "password",
-    placeholder: "Пароль",
-    autoComplete: "new-password",
-    type: "password",
-  },
   {
     name: "age",
     placeholder: "Возраст",
@@ -65,9 +62,19 @@ const fieldOrder: FieldName[] = [
   "city",
   "age",
   "vkId",
-  "email",
-  "password",
 ] as const;
+
+type UploadStatus = "idle" | "uploading" | "uploaded";
+
+function resolveApiErrorMessage(error: unknown): string {
+  if (error instanceof ApiError) {
+    return error.message;
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return "Не удалось выполнить запрос. Попробуйте снова.";
+}
 
 export default function ParticipationModal({
   isOpen,
@@ -79,6 +86,12 @@ export default function ParticipationModal({
   const [formError, setFormError] = useState<string | null>(null);
   const originalOverflow = useRef<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { token } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedAudio, setSelectedAudio] = useState<File | null>(null);
+  const [uploadStatus, setUploadStatus] = useState<UploadStatus>("idle");
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadedAssetId, setUploadedAssetId] = useState<string | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -91,9 +104,18 @@ export default function ParticipationModal({
   useEffect(() => {
     if (!isOpen) {
       setFormError(null);
+      setSelectedAudio(null);
+      setUploadStatus("idle");
+      setUploadError(null);
+      setUploadedAssetId(null);
+      setIsSubmitting(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
       return;
     }
     setFormError(null);
+    setUploadError(null);
   }, [isOpen]);
 
   useEffect(() => {
@@ -154,7 +176,79 @@ export default function ParticipationModal({
     }
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null;
+    setSelectedAudio(file);
+    setUploadStatus("idle");
+    setUploadError(null);
+    setUploadedAssetId(null);
+  };
+
+  const handleClearFile = () => {
+    setSelectedAudio(null);
+    setUploadStatus("idle");
+    setUploadError(null);
+    setUploadedAssetId(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const uploadAudio = async (file: File): Promise<string> => {
+    if (!token) {
+      throw new Error("Авторизуйтесь, чтобы отправить заявку.");
+    }
+    const mime =
+      file.type && file.type.trim().length > 0 ? file.type : "audio/mpeg";
+    setUploadError(null);
+    setUploadStatus("uploading");
+
+    try {
+      const presign = await battleRapApi.media.presignUpload(
+        {
+          filename: file.name,
+          mime,
+          sizeBytes: file.size,
+          type: "audio",
+        },
+        { token }
+      );
+
+      const uploadResponse = await fetch(presign.uploadUrl, {
+        method: "PUT",
+        headers: presign.headers,
+        body: file,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error("Не удалось загрузить аудиофайл.");
+      }
+
+      const completion = await battleRapApi.media.completeUpload(
+        {
+          assetId: presign.assetId,
+          storageKey: presign.storageKey,
+          mime,
+          sizeBytes: file.size,
+          kind: "audio",
+        },
+        { token }
+      );
+
+      const resolvedId = completion.id ?? presign.assetId;
+      setUploadStatus("uploaded");
+      setUploadedAssetId(resolvedId);
+      return resolvedId;
+    } catch (error) {
+      setUploadStatus("idle");
+      setUploadedAssetId(null);
+      const message = resolveApiErrorMessage(error);
+      setUploadError(message);
+      throw new Error(message);
+    }
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const termsAccepted = formData.get("termsAcceptance");
@@ -164,12 +258,74 @@ export default function ParticipationModal({
       return;
     }
 
+    if (isSubmitting) {
+      return;
+    }
+
+    const fullNameRaw = formData.get("fullName");
+    const cityRaw = formData.get("city");
+    const ageRaw = formData.get("age");
+    const vkIdRaw = formData.get("vkId");
+    const beatAuthorRaw = formData.get("beatAuthor");
+
+    const payload: SubmitApplicationPayload = {};
+    if (typeof fullNameRaw === "string" && fullNameRaw.trim()) {
+      payload.fullName = fullNameRaw.trim();
+    }
+    if (typeof cityRaw === "string" && cityRaw.trim()) {
+      payload.city = cityRaw.trim();
+    }
+    if (typeof vkIdRaw === "string" && vkIdRaw.trim()) {
+      payload.vkId = vkIdRaw.trim();
+    }
+    if (typeof beatAuthorRaw === "string" && beatAuthorRaw.trim()) {
+      payload.beatAuthor = beatAuthorRaw.trim();
+    }
+    if (typeof ageRaw === "string" && ageRaw.trim()) {
+      const parsedAge = Number(ageRaw);
+      if (!Number.isFinite(parsedAge) || parsedAge <= 0) {
+        setFormError("Укажите корректный возраст.");
+        return;
+      }
+      payload.age = parsedAge;
+    }
+
+    if (!token) {
+      setFormError("Авторизуйтесь, чтобы отправить заявку.");
+      return;
+    }
+
     setFormError(null);
-    event.currentTarget.reset();
-    onClose();
+    setUploadError(null);
+    setIsSubmitting(true);
+
+    try {
+      let audioId: string | undefined;
+      if (selectedAudio) {
+        if (uploadStatus === "uploaded" && uploadedAssetId) {
+          audioId = uploadedAssetId;
+        } else {
+          audioId = await uploadAudio(selectedAudio);
+        }
+      }
+
+      const submissionPayload: SubmitApplicationPayload = {
+        ...payload,
+        audioId,
+      };
+
+      await battleRapApi.artist.submitApplication(submissionPayload, { token });
+      event.currentTarget.reset();
+      handleClearFile();
+      onClose();
+    } catch (error) {
+      setFormError(resolveApiErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const formIsProcessing = false;
+  const formIsProcessing = isSubmitting || uploadStatus === "uploading";
 
   const renderInputField = (
     field: ParticipationField | undefined,
@@ -190,6 +346,7 @@ export default function ParticipationModal({
         name={field.name}
         placeholder={field.placeholder}
         required
+        disabled={formIsProcessing}
         type={field.type}
         {...("min" in field ? { min: field.min } : {})}
       />
@@ -279,14 +436,16 @@ export default function ParticipationModal({
           <div className={styles.inlineButtons}>
             <button
               className={styles.whiteButton}
+              disabled={formIsProcessing}
               onClick={() => fileInputRef.current?.click()}
               type="button"
             >
-              Загрузить трек
+              {selectedAudio ? "Сменить трек" : "Загрузить трек"}
             </button>
 
             <input
               className={[modalStyles.input, styles.beatAuthorInline].join(" ")}
+              disabled={formIsProcessing}
               name="beatAuthor"
               placeholder="Автор бита"
               type="text"
@@ -296,16 +455,43 @@ export default function ParticipationModal({
           <input
             accept="audio/*"
             className={styles.fileInput}
-            onChange={() => {
-              /* placeholder for file selection */
-            }}
+            disabled={formIsProcessing}
+            onChange={handleFileSelect}
             ref={fileInputRef}
             type="file"
           />
 
+          {selectedAudio ? (
+            <div className={styles.fileInfoRow}>
+              <span className={styles.fileName}>{selectedAudio.name}</span>
+              <span className={styles.fileStatus}>
+                {uploadStatus === "uploading"
+                  ? "Загрузка..."
+                  : uploadStatus === "uploaded"
+                  ? "Файл загружен"
+                  : `${(selectedAudio.size / (1024 * 1024)).toFixed(1)} МБ`}
+              </span>
+              <button
+                className={styles.removeFileButton}
+                disabled={formIsProcessing}
+                onClick={handleClearFile}
+                type="button"
+              >
+                Удалить
+              </button>
+            </div>
+          ) : null}
+
+          {uploadError ? (
+            <p className={styles.formError} aria-live="assertive">
+              {uploadError}
+            </p>
+          ) : null}
+
           <label className={styles.termsRow}>
             <input
               className={styles.checkbox}
+              disabled={formIsProcessing}
               name="termsAcceptance"
               required
               type="checkbox"

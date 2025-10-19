@@ -1,12 +1,53 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import styles from "./styles.module.css";
+import AuthModal, {
+  type AuthMode,
+} from "@/components/auth/AuthModal/AuthModal";
+import { useAuth } from "@/components/auth/AuthProvider/AuthProvider";
 import ParticipationModal from "@/components/participation/ParticipationModal";
+import styles from "./styles.module.css";
 
 export default function ApplySection() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isParticipationOpen, setIsParticipationOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<AuthMode>("signIn");
+  const [shouldOpenAfterAuth, setShouldOpenAfterAuth] = useState(false);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+    if (isAuthModalOpen) {
+      setIsAuthModalOpen(false);
+    }
+    if (shouldOpenAfterAuth) {
+      setIsParticipationOpen(true);
+      setShouldOpenAfterAuth(false);
+    }
+  }, [user, isAuthModalOpen, shouldOpenAfterAuth]);
+
+  const handleApplyClick = () => {
+    if (!user) {
+      setAuthMode("signIn");
+      setIsAuthModalOpen(true);
+      setShouldOpenAfterAuth(true);
+      return;
+    }
+    setIsParticipationOpen(true);
+  };
+
+  const handleCloseParticipation = () => {
+    setIsParticipationOpen(false);
+    setShouldOpenAfterAuth(false);
+  };
+
+  const handleCloseAuth = () => {
+    setIsAuthModalOpen(false);
+    setShouldOpenAfterAuth(false);
+  };
 
   return (
     <section className={styles.root}>
@@ -18,7 +59,7 @@ export default function ApplySection() {
         <div className={styles.actions}>
           <button
             className={styles.primaryAction}
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleApplyClick}
             type="button"
           >
             Принять участие
@@ -28,7 +69,16 @@ export default function ApplySection() {
           </Link>
         </div>
       </div>
-      <ParticipationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <ParticipationModal
+        isOpen={isParticipationOpen}
+        onClose={handleCloseParticipation}
+      />
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        mode={authMode}
+        onClose={handleCloseAuth}
+        onModeChange={setAuthMode}
+      />
     </section>
   );
 }

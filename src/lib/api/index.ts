@@ -4,12 +4,24 @@ import type { AuthApi, LoginPayload, RegisterPayload } from "./modules/auth";
 import { createAuthApi } from "./modules/auth";
 import type { ProfilesApi } from "./modules/profiles";
 import { createProfilesApi } from "./modules/profiles";
-import type { AdminApi, ListUsersParams } from "./modules/admin";
-import { createAdminApi } from "./modules/admin";
 import type { MediaApi } from "./modules/media";
 import { createMediaApi } from "./modules/media";
 import type { ListSubmissionsParams, ModeratorApi } from "./modules/moderator";
 import { createModeratorApi } from "./modules/moderator";
+import type { AdminApi, ListUsersParams } from "./modules/admin";
+import { createAdminApi } from "./modules/admin";
+import type {
+  ArtistApi,
+  ParticipationApplication,
+  SubmitApplicationPayload,
+  SubmitApplicationResult,
+} from "./modules/artist";
+import { createArtistApi } from "./modules/artist";
+import type {
+  ListPublicParticipantsParams,
+  PublicParticipantsApi,
+} from "./modules/publicParticipants";
+import { createPublicParticipantsApi } from "./modules/publicParticipants";
 
 export * from "./config";
 export * from "./httpClient";
@@ -20,6 +32,13 @@ export type { ProfilesApi } from "./modules/profiles";
 export type { AdminApi, ListUsersParams } from "./modules/admin";
 export type { MediaApi } from "./modules/media";
 export type { ModeratorApi, ListSubmissionsParams } from "./modules/moderator";
+export type { PublicParticipantsApi, ListPublicParticipantsParams } from "./modules/publicParticipants";
+export type {
+  ArtistApi,
+  ParticipationApplication,
+  SubmitApplicationPayload,
+  SubmitApplicationResult,
+} from "./modules/artist";
 
 export interface BattleRapApi {
   auth: AuthApi;
@@ -27,6 +46,8 @@ export interface BattleRapApi {
   admin: AdminApi;
   media: MediaApi;
   moderator: ModeratorApi;
+  publicParticipants: PublicParticipantsApi;
+  artist: ArtistApi;
 }
 
 export function createBattleRapApi(options?: ApiClientOptions): BattleRapApi {
@@ -37,6 +58,8 @@ export function createBattleRapApi(options?: ApiClientOptions): BattleRapApi {
     admin: createAdminApi(client),
     media: createMediaApi(client),
     moderator: createModeratorApi(client),
+    publicParticipants: createPublicParticipantsApi(client),
+    artist: createArtistApi(client),
   };
 }
 

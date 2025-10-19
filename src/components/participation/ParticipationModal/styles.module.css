@@ -47,6 +47,13 @@
   box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
 }
 
+.whiteButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 .inlineButtons {
   display: flex;
   flex-wrap: wrap;
@@ -73,6 +80,46 @@
 
 .fileInput {
   display: none;
+}
+
+.fileInfoRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.fileName {
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.fileStatus {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.removeFileButton {
+  border: none;
+  background: none;
+  color: #ff665c;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.removeFileButton:hover,
+.removeFileButton:focus-visible {
+  text-decoration: underline;
+}
+
+.removeFileButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  text-decoration: none;
 }
 
 .beatAuthorInput {

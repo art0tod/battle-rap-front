@@ -47,11 +47,11 @@ function buildUpstreamUrl(pathSegments: string[] | undefined, search: string): s
   return `${apiConfig.upstreamApiBaseUrl}${pathname}${search}`;
 }
 
-async function proxyRequest(
-  request: NextRequest,
-  context: { params: { segments?: string[] } },
-): Promise<Response> {
-  const targetUrl = buildUpstreamUrl(context.params?.segments, request.nextUrl.search);
+type RouteContext = { params: Promise<{ segments?: string[] }> };
+
+async function proxyRequest(request: NextRequest, context: RouteContext): Promise<Response> {
+  const params = await context.params;
+  const targetUrl = buildUpstreamUrl(params?.segments, request.nextUrl.search);
   const headers = filterRequestHeaders(request.headers);
 
   const init: RequestInit = {
@@ -78,26 +78,26 @@ async function proxyRequest(
   });
 }
 
-export async function GET(request: NextRequest, context: { params: { segments?: string[] } }) {
+export async function GET(request: NextRequest, context: RouteContext) {
   return proxyRequest(request, context);
 }
 
-export async function POST(request: NextRequest, context: { params: { segments?: string[] } }) {
+export async function POST(request: NextRequest, context: RouteContext) {
   return proxyRequest(request, context);
 }
 
-export async function PUT(request: NextRequest, context: { params: { segments?: string[] } }) {
+export async function PUT(request: NextRequest, context: RouteContext) {
   return proxyRequest(request, context);
 }
 
-export async function PATCH(request: NextRequest, context: { params: { segments?: string[] } }) {
+export async function PATCH(request: NextRequest, context: RouteContext) {
   return proxyRequest(request, context);
 }
 
-export async function DELETE(request: NextRequest, context: { params: { segments?: string[] } }) {
+export async function DELETE(request: NextRequest, context: RouteContext) {
   return proxyRequest(request, context);
 }
 
-export async function OPTIONS(request: NextRequest, context: { params: { segments?: string[] } }) {
+export async function OPTIONS(request: NextRequest, context: RouteContext) {
   return proxyRequest(request, context);
 }

@@ -19,6 +19,25 @@ export interface ProfileAvatar {
   url: string;
 }
 
+export interface PublicParticipant {
+  id: string;
+  displayName: string;
+  roles: UserRole[];
+  fullName?: string | null;
+  city?: string | null;
+  joinedAt: string;
+  avatar?: ProfileAvatar | null;
+  avgTotalScore?: number | null;
+  totalWins: number;
+}
+
+export interface PublicParticipantsList {
+  data: PublicParticipant[];
+  page: number;
+  limit: number;
+  total: number;
+}
+
 export interface UserProfile {
   id: string;
   displayName: string;
@@ -93,6 +112,41 @@ export interface CompleteUploadPayload {
 export interface MediaAssetStatus {
   id: string;
   status: string;
+}
+
+export type ApplicationStatus = "submitted" | "approved" | "rejected";
+
+export interface ParticipationApplication {
+  id: string;
+  status: ApplicationStatus;
+  city?: string | null;
+  age?: number | null;
+  vkId?: string | null;
+  fullName?: string | null;
+  beatAuthor?: string | null;
+  audioId?: string | null;
+  lyrics?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  reviewedAt?: string | null;
+  rejectReason?: string | null;
+  roundId?: string | null;
+  moderatorId?: string | null;
+}
+
+export interface SubmitApplicationPayload {
+  city?: string;
+  age?: number;
+  vkId?: string;
+  fullName?: string;
+  beatAuthor?: string;
+  audioId?: string;
+  lyrics?: string;
+}
+
+export interface SubmitApplicationResult {
+  id: string;
+  status: ApplicationStatus;
 }
 
 export interface ModerationSubmission {

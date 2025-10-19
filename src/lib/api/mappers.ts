@@ -1,4 +1,6 @@
+import { normalizeUserRoles } from "@/lib/roles";
 import type {
+  ApplicationStatus,
   AdminUser,
   AdminUserList,
   AuthSession,
@@ -6,10 +8,13 @@ import type {
   MediaAssetStatus,
   ModerationSubmission,
   ModerationSubmissionList,
+  ParticipationApplication,
   PresignUploadResponse,
+  PublicParticipant,
+  PublicParticipantsList,
   RefreshTokens,
+  SubmitApplicationResult,
   UserProfile,
-  UserRole,
   UserRolesState,
 } from "./types";
 
@@ -60,6 +65,25 @@ export interface ApiProfileView {
   vk_id?: string | null;
   full_name?: string | null;
   socials?: Record<string, unknown> | null;
+}
+
+export interface ApiPublicParticipant {
+  id: string;
+  display_name: string;
+  roles: string[];
+  full_name?: string | null;
+  city?: string | null;
+  joined_at: string;
+  avatar?: ApiProfileAvatar | null;
+  avg_total_score?: number | null;
+  total_wins: number;
+}
+
+export interface ApiPublicParticipantsResponse {
+  data: ApiPublicParticipant[];
+  page: number;
+  limit: number;
+  total: number;
 }
 
 export interface ApiAdminUser {
@@ -129,8 +153,27 @@ export interface ApiUserRolesState {
   roles: string[];
 }
 
-function castUserRole(role: string): UserRole {
-  return role as UserRole;
+export interface ApiParticipationApplication {
+  id: string;
+  status: string;
+  city?: string | null;
+  age?: number | null;
+  vk_id?: string | null;
+  full_name?: string | null;
+  beat_author?: string | null;
+  audio_id?: string | null;
+  lyrics?: string | null;
+  created_at: string;
+  updated_at: string;
+  reviewed_at?: string | null;
+  reject_reason?: string | null;
+  round_id?: string | null;
+  moderator_id?: string | null;
+}
+
+export interface ApiSubmitApplicationResult {
+  id: string;
+  status: string;
 }
 
 function mapAuthUser(payload: ApiAuthUser): AuthUser {
@@ -138,7 +181,7 @@ function mapAuthUser(payload: ApiAuthUser): AuthUser {
     id: payload.id,
     email: payload.email,
     displayName: payload.display_name,
-    roles: payload.roles.map(castUserRole),
+    roles: normalizeUserRoles(payload.roles),
   };
 }
 
@@ -163,7 +206,7 @@ export function mapProfileView(payload: ApiProfileView): UserProfile {
   return {
     id: payload.id,
     displayName: payload.display_name,
-    roles: payload.roles.map(castUserRole),
+    roles: normalizeUserRoles(payload.roles),
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
     viewerContext: {
@@ -183,12 +226,37 @@ export function mapProfileView(payload: ApiProfileView): UserProfile {
   };
 }
 
+export function mapPublicParticipant(payload: ApiPublicParticipant): PublicParticipant {
+  return {
+    id: payload.id,
+    displayName: payload.display_name,
+    roles: normalizeUserRoles(payload.roles),
+    fullName: payload.full_name ?? null,
+    city: payload.city ?? null,
+    joinedAt: payload.joined_at,
+    avatar: payload.avatar ?? null,
+    avgTotalScore: payload.avg_total_score ?? null,
+    totalWins: payload.total_wins,
+  };
+}
+
+export function mapPublicParticipantsResponse(
+  payload: ApiPublicParticipantsResponse,
+): PublicParticipantsList {
+  return {
+    data: payload.data.map(mapPublicParticipant),
+    page: payload.page,
+    limit: payload.limit,
+    total: payload.total,
+  };
+}
+
 export function mapAdminUser(payload: ApiAdminUser): AdminUser {
   return {
     id: payload.id,
     email: payload.email,
     displayName: payload.display_name,
-    roles: payload.roles.map(castUserRole),
+    roles: normalizeUserRoles(payload.roles),
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
     lastLoginAt: payload.last_login_at ?? null,
@@ -268,6 +336,48 @@ export function mapModerationSubmissionDetail(
 export function mapUserRolesState(payload: ApiUserRolesState): UserRolesState {
   return {
     userId: payload.user_id,
-    roles: payload.roles.map(castUserRole),
+    roles: normalizeUserRoles(payload.roles),
+  };
+}
+
+function mapApplicationStatus(value: string): ApplicationStatus {
+  switch (value) {
+    case "submitted":
+    case "approved":
+    case "rejected":
+      return value;
+    default:
+      return "submitted";
+  }
+}
+
+export function mapParticipationApplication(
+  payload: ApiParticipationApplication,
+): ParticipationApplication {
+  return {
+    id: payload.id,
+    status: mapApplicationStatus(payload.status),
+    city: payload.city ?? null,
+    age: payload.age ?? null,
+    vkId: payload.vk_id ?? null,
+    fullName: payload.full_name ?? null,
+    beatAuthor: payload.beat_author ?? null,
+    audioId: payload.audio_id ?? null,
+    lyrics: payload.lyrics ?? null,
+    createdAt: payload.created_at,
+    updatedAt: payload.updated_at,
+    reviewedAt: payload.reviewed_at ?? null,
+    rejectReason: payload.reject_reason ?? null,
+    roundId: payload.round_id ?? null,
+    moderatorId: payload.moderator_id ?? null,
+  };
+}
+
+export function mapSubmitApplicationResult(
+  payload: ApiSubmitApplicationResult,
+): SubmitApplicationResult {
+  return {
+    id: payload.id,
+    status: mapApplicationStatus(payload.status),
   };
 }
