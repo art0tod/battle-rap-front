@@ -11,6 +11,7 @@ import {
 import { createPortal } from "react-dom";
 import styles from "./styles.module.css";
 import { useAuth } from "@/components/auth/AuthProvider/AuthProvider";
+import { ApiError } from "@/lib/api";
 
 export type AuthMode = "signIn" | "signUp";
 
@@ -159,6 +160,16 @@ export default function AuthModal({
         onClose();
         return;
       } catch (error) {
+        if (error instanceof ApiError) {
+          if (error.status === 400 || error.status === 409) {
+            setFormError(error.message || "Не удалось завершить регистрацию. Проверьте данные.");
+            return;
+          }
+          if (error.status >= 500) {
+            setFormError("Регистрация временно недоступна. Попробуйте позже.");
+            return;
+          }
+        }
         if (error instanceof Error) {
           setFormError(error.message);
           return;
@@ -173,6 +184,18 @@ export default function AuthModal({
       event.currentTarget.reset();
       onClose();
     } catch (error) {
+      if (error instanceof ApiError) {
+        if (error.status === 401 || error.status === 400) {
+          setFormError("Неверная почта или пароль.");
+          return;
+        }
+        if (error.status >= 500) {
+          setFormError("Авторизация временно недоступна. Попробуйте позже.");
+          return;
+        }
+        setFormError(error.message || "Не удалось войти. Попробуйте позже.");
+        return;
+      }
       if (error instanceof Error) {
         setFormError(error.message);
         return;

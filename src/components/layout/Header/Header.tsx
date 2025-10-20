@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import styles from "./styles.module.css";
 import AuthModal, {
@@ -13,6 +13,8 @@ const links = [
   { href: "/#posts-section", title: "Посты" },
   { href: "/members", title: "Участники" },
   { href: "/members?role=judge", title: "Судьи" },
+  { href: "/battles", title: "Обзор раундов" },
+  { href: "/judge", title: "Судейство" },
   { href: "/#judges-rating-section", title: "Рейтинг судей" },
 ];
 
@@ -64,7 +66,10 @@ export default function Header() {
             ))}
           </ul>
           {user ? (
-            <Link className={styles.cta} href={"/profile"}>
+            <Link
+              className={styles.cta}
+              href={user.roles.includes("admin") ? "/admin" : "/profile"}
+            >
               {user.displayName}
             </Link>
           ) : (

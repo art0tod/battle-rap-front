@@ -1,0 +1,365 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.description {
+  margin-top: 0.25rem;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 520px;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.primaryButton,
+.refreshButton,
+.filterButton,
+.secondaryButton,
+.actionButton,
+.dangerButton,
+.addParticipantButton,
+.removeParticipantButton,
+.submitButton,
+.cancelButton,
+.retryButton {
+  border-radius: 10px;
+  padding: 0.55rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.primaryButton {
+  background: rgba(116, 243, 163, 0.18);
+  border-color: rgba(116, 243, 163, 0.35);
+  color: #b5ffd6;
+}
+
+.primaryButton:hover {
+  background: rgba(116, 243, 163, 0.28);
+}
+
+.refreshButton,
+.filterButton {
+  background: rgba(255, 149, 0, 0.16);
+  border-color: rgba(255, 149, 0, 0.45);
+  color: #ffd7a6;
+}
+
+.refreshButton:hover,
+.filterButton:hover {
+  background: rgba(255, 149, 0, 0.26);
+}
+
+.secondaryButton,
+.cancelButton,
+.removeParticipantButton {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.secondaryButton:hover,
+.cancelButton:hover,
+.removeParticipantButton:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.dangerButton {
+  background: rgba(255, 59, 59, 0.14);
+  border-color: rgba(255, 59, 59, 0.35);
+  color: #ff9f9f;
+}
+
+.dangerButton:hover {
+  background: rgba(255, 59, 59, 0.22);
+}
+
+.actionButton {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.actionButton:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.filterInput {
+  padding: 0.55rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(15, 15, 15, 0.9);
+  color: #f5f5f5;
+  min-width: 200px;
+}
+
+.filterInput::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.successMessage {
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  background: rgba(116, 243, 163, 0.14);
+  border: 1px solid rgba(116, 243, 163, 0.4);
+  color: #c2ffe0;
+}
+
+.errorBox {
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  background: rgba(255, 59, 59, 0.12);
+  border: 1px solid rgba(255, 59, 59, 0.45);
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.retryButton {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.retryButton:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+  background: rgba(20, 20, 20, 0.92);
+}
+
+.table th,
+.table td {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: left;
+  vertical-align: top;
+}
+
+.table th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.emptyCell {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.mono {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 0.8rem;
+}
+
+.primaryCell {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.metaCell {
+  margin-top: 0.25rem;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.actionsCell {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pagination {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.editor {
+  padding: 1.5rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 15, 15, 0.86);
+  display: grid;
+  gap: 1.25rem;
+}
+
+.editorHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.editorTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.editorSubtitle {
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.55);
+  max-width: 520px;
+}
+
+.editorForm {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.fieldGroup {
+  display: grid;
+  gap: 0.85rem;
+}
+
+@media (min-width: 720px) {
+  .fieldGroup {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.fieldLabel {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.fieldInput {
+  padding: 0.6rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(10, 10, 10, 0.92);
+  color: #f5f5f5;
+}
+
+.participantsSection {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.participantsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.participantsTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.participantsList {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.participantRow {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.participantInput {
+  flex: 1 1 260px;
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(10, 10, 10, 0.92);
+  color: #f5f5f5;
+}
+
+.participantSeedInput {
+  width: 120px;
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(10, 10, 10, 0.92);
+  color: #f5f5f5;
+}
+
+.addParticipantButton {
+  background: rgba(116, 243, 163, 0.18);
+  border-color: rgba(116, 243, 163, 0.35);
+  color: #b5ffd6;
+}
+
+.addParticipantButton:hover {
+  background: rgba(116, 243, 163, 0.26);
+}
+
+.removeParticipantButton {
+  flex: 0 0 auto;
+}
+
+.formError {
+  color: #ff9f9f;
+  font-size: 0.85rem;
+}
+
+.submitRow {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.submitButton {
+  background: rgba(116, 243, 163, 0.2);
+  border-color: rgba(116, 243, 163, 0.35);
+  color: #b5ffd6;
+}
+
+.submitButton:hover {
+  background: rgba(116, 243, 163, 0.3);
+}

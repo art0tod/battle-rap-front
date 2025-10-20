@@ -19,6 +19,7 @@ const navItems: NavItem[] = [
   { href: "/admin", label: "Обзор" },
   { href: "/admin/users", label: "Пользователи" },
   { href: "/admin/submissions", label: "Заявки" },
+  { href: "/admin/battles", label: "Баттлы" },
   { href: "/admin/media", label: "Медиа" },
 ];
 

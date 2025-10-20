@@ -17,6 +17,8 @@ const siteLinks = [
   { href: "/#posts-section", title: "Посты" },
   { href: "/members", title: "Участники" },
   { href: "/members?role=judge", title: "Судьи" },
+  { href: "/battles", title: "Обзор раундов" },
+  { href: "/judge", title: "Судейство" },
   { href: "/#judges-rating-section", title: "Рейтинг судей" },
 ];
 
@@ -54,17 +56,26 @@ export default function Footer() {
               ))}
             </ul>
           </div>
-          <Link
-            className={styles.cta}
-            href={"/profile"}
-            onClick={(event) => {
-              event.preventDefault();
-              setAuthMode("signIn");
-              setIsAuthModalOpen(true);
-            }}
-          >
-            Войти
-          </Link>
+          {user ? (
+            <Link
+              className={styles.cta}
+              href={user.roles.includes("admin") ? "/admin" : "/profile"}
+            >
+              {user.displayName}
+            </Link>
+          ) : (
+            <Link
+              className={styles.cta}
+              href={"/profile"}
+              onClick={(event) => {
+                event.preventDefault();
+                setAuthMode("signIn");
+                setIsAuthModalOpen(true);
+              }}
+            >
+              Войти
+            </Link>
+          )}
         </div>
         <div className={styles.footer__copyrightContainer}>
           <ul className={styles.contactsIconsList}>

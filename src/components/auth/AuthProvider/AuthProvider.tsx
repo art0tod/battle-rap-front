@@ -121,6 +121,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const session = await battleRapApi.auth.login(payload);
         return await applyAuthSession(session);
       } catch (error) {
+        if (error instanceof ApiError) {
+          throw error;
+        }
         throw new Error(resolveApiErrorMessage(error));
       } finally {
         setIsProcessing(false);
@@ -136,6 +139,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const session = await battleRapApi.auth.register(payload);
         return await applyAuthSession(session);
       } catch (error) {
+        if (error instanceof ApiError) {
+          throw error;
+        }
         throw new Error(resolveApiErrorMessage(error));
       } finally {
         setIsProcessing(false);

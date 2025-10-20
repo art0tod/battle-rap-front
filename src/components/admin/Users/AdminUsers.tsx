@@ -290,8 +290,8 @@ function translateRole(role: string): string {
     moderator: "Модератор",
     judge: "Судья",
     artist: "Исполнитель",
-    user: "Пользователь",
     listener: "Слушатель",
+    user: "Пользователь",
   };
   return dictionary[role] ?? role;
 }

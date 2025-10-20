@@ -49,4 +49,3 @@ export function createPublicParticipantsApi(client: ApiClient = apiClient): Publ
     },
   };
 }
-

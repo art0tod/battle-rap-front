@@ -11,6 +11,11 @@ import type {
   SubmitApplicationPayload,
   SubmitApplicationResult,
 } from "../types";
+export type {
+  ParticipationApplication,
+  SubmitApplicationPayload,
+  SubmitApplicationResult,
+} from "../types";
 
 const APPLICATIONS_ROOT = "/api/v1/applications";
 
