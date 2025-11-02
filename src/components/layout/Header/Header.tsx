@@ -9,11 +9,10 @@ import AuthModal, {
 import { useAuth } from "@/components/auth/AuthProvider/AuthProvider";
 
 const links = [
-  { href: "/", title: "Баттлы" },
+  { href: "/battles", title: "Баттлы" },
   { href: "/#posts-section", title: "Посты" },
   { href: "/members", title: "Участники" },
   { href: "/members?role=judge", title: "Судьи" },
-  { href: "/battles", title: "Обзор раундов" },
   { href: "/judge", title: "Судейство" },
   { href: "/#judges-rating-section", title: "Рейтинг судей" },
 ];
